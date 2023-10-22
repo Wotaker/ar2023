@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import mpi4py
 import numpy as np
 import sys
