@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+
 
 def find_primes(high: int):
 
@@ -10,6 +12,7 @@ def find_primes(high: int):
             mask[i*i::i] = False
     
     return numbers[mask]
+
 
 def find_primes_interval(low: int, high: int, dividers: list):
     
@@ -24,12 +27,25 @@ def find_primes_interval(low: int, high: int, dividers: list):
     
     return numbers[mask]
 
+
+def find_primes_parallel(high: int):
+
+    limit_B = int(np.sqrt(high))
+    dividers_B = find_primes(limit_B)
+    primes_C = find_primes_interval(limit_B + 1, high, dividers_B)
+    primes = np.concatenate((dividers_B, primes_C))
+
+    return primes
     
 
 if __name__ == "__main__":
-    dividers_B = find_primes(10)
-    primes_C = find_primes_interval(11, 100, dividers_B)
+    
+    assert len(sys.argv) == 2, "Programm requires one argument - an upper limit of the prime"
 
-    primes = np.concatenate((dividers_B, primes_C))
+    high = int(sys.argv[1])
+    primes_parallel = find_primes_parallel(high)
+    primes = find_primes(high)
 
-    assert (primes == find_primes(100)).all(), "Something went wrong!"
+    assert np.array_equal(primes, primes_parallel), "Primes are not equal"
+
+    print(f"There are {len(primes_parallel)} primes up to {high}:\n{primes_parallel}")
